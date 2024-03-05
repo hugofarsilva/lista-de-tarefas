@@ -1,5 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
+import React, {useState} from 'react';
+import { 
+  StyleSheet, 
+  Text, View, 
+  ImageBackground, 
+  TouchableOpacity, 
+  TouchableHighlight,
+  Modal,
+  TextInput,
+  ScrollView
+} from 'react-native';
 import Constants from 'expo-constants'
 import { AntDesign } from '@expo/vector-icons';
 import { useFonts, 
@@ -7,10 +17,26 @@ import { useFonts,
   Lato_900Black,
 } from '@expo-google-fonts/lato';
 
-const image = require('./resources/bg.jpg');
-
 
 export default function App() {
+  
+  const image = require('./resources/bg.jpg');
+
+  const [tasks, setTasks] = useState([
+    {
+      id: 1,
+      task: 'Minha tarefa 1.'
+    },
+
+    {
+      id: 2,
+      task: 'Minha tarefa 2.'
+    }
+  ]);
+
+  const [modal, setModal] = useState(false);
+  const [currentTask, setCurrentTask] = useState('');
+
   let [fontsLoaded, fontError] = useFonts({
     Lato_400Regular,
     Lato_900Black,
@@ -19,35 +45,90 @@ export default function App() {
   if (!fontsLoaded && !fontError){
     return null;
   }
- 
+
+  function deletTask(id) {
+    alert('Tarefa com id ' + id + ' foi deletada com sucesso!');
+    let newTask = tasks.filter(function(val){
+      return val.id != id;
+    });
+    setTasks(newTask);
+  }
+   
+  function addTask() {
+    setModal(!modal);
+    let id = 0;
+    if (tasks.length > 0) {
+      id = tasks[tasks.length - 1].id + 1;
+    }
+    let task = {id:id, task:currentTask};
+    setTasks([...tasks, task]);
+  }
   return (
     <ScrollView style={styles.container}>
+      
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TextInput onChangeText={text => setCurrentTask(text)} 
+              autoFocus={true}>
+            </TextInput>
 
-        <ImageBackground source={image} style={styles.image}>
-          <View style = {styles.coverView}>
-            <Text style = {styles.text}>Lista de Tarefas</Text>
+            <TouchableHighlight
+              style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+              onPress={() => addTask()}
+            >
+              <Text style={styles.textStyle}>Adicionar Tarefa</Text>
+            </TouchableHighlight>
           </View>
-        </ImageBackground>
+        </View>
+      </Modal>
 
-        <View style = {styles.tarefaSingle}>
+      <ImageBackground source={image} style={styles.image}>
+        <View style = {styles.coverView}>
+          <Text style = {styles.text}>Lista de Tarefas</Text>
+        </View>
+      </ImageBackground>
 
-            <View style = {{flex: 1, width: '100%', padding: 10}}>
-              <Text>
-                Minha tarefa número 1 do dia xx do mês xxx
-              </Text>
-            </View>
+      {
+        tasks.map(function(val) {
+          return(
+            <View style = {styles.tarefaSingle}>
+                <View style = {{flex: 1, width: '100%', padding: 10}}>
+                  <Text>
+                    {val.task}
+                  </Text>
+                </View>
 
-            <View style = {{alignItems: 'flex-end', flex: 1, padding: 10}}>
-              <TouchableOpacity>
-                <AntDesign name="minuscircleo" size={24} color="black" />
-              </TouchableOpacity>
-            </View>
+                <View style = {{alignItems: 'flex-end', flex: 1, padding: 10}}>
+                  <TouchableOpacity onPress={()=> deletTask(val.id)}>
+                    <AntDesign name="minuscircleo" size={24} color="black" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+          );
+        })
+      }
+     
+      <TouchableOpacity style={styles.touchableOpacity} onPress={()=> setModal(true)}>
+        <Text style={{
+          padding: 10, 
+          textAlign: 'center', 
+          color: 'white',
+          fontFamily: 'Lato_900Black'}}>
+          Nova Tarefa
+        </Text>
+      </TouchableOpacity>
 
-          </View>
-          
     </ScrollView>
   );
-}
+};
 
 
 const styles = StyleSheet.create({
@@ -55,6 +136,14 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: Constants.statusBarHeight,
     
+  },
+
+  touchableOpacity: {
+    width: 200,
+    padding: 8,
+    backgroundColor: 'gray',
+    marginTop: 20,
+    alignSelf: 'center'
   },
 
   image: {
@@ -87,5 +176,49 @@ const styles = StyleSheet.create({
     borderBottomColor: 'black',
     flexDirection: 'row',
     paddingBottom: 10
+  },
+
+  //modal styles
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor:'rgba(0,0,0,0.5)'
+  },
+  
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex:5
+  },
+
+  openButton: {
+    backgroundColor: "#F194FF",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
+  },
+
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
   }
+
 });
