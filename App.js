@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { 
   StyleSheet, 
   Text, View, 
@@ -22,17 +23,7 @@ export default function App() {
   
   const image = require('./resources/bg.jpg');
 
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      task: 'Minha tarefa 1.'
-    },
-
-    {
-      id: 2,
-      task: 'Minha tarefa 2.'
-    }
-  ]);
+  const [tasks, setTasks] = useState([]);
 
   const [modal, setModal] = useState(false);
   const [currentTask, setCurrentTask] = useState('');
@@ -41,6 +32,20 @@ export default function App() {
     Lato_400Regular,
     Lato_900Black,
   });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        let currentTask = await AsyncStorage.getItem('tasks');
+        if(currentTask == null)
+          setTasks([]);
+        else
+          setTasks(JSON.parse(currentTask));
+      } catch (error) {
+        
+      }
+    })();
+  },[])
 
   if (!fontsLoaded && !fontError){
     return null;
@@ -52,6 +57,15 @@ export default function App() {
       return val.id != id;
     });
     setTasks(newTask);
+
+    (async () => {
+      try {
+        await AsyncStorage.setItem('tasks', JSON.stringify(newTask));
+        //console.log('chamado')
+      } catch (error) {
+        
+      }
+    })();
   }
    
   function addTask() {
@@ -62,6 +76,15 @@ export default function App() {
     }
     let task = {id:id, task:currentTask};
     setTasks([...tasks, task]);
+
+    (async () => {
+      try {
+        await AsyncStorage.setItem('tasks', JSON.stringify([...tasks, task]));
+        
+      } catch (error) {
+        
+      }
+    })();
   }
   return (
     <ScrollView style={styles.container}>
