@@ -1,15 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Checkbox from 'expo-checkbox';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { 
   StyleSheet, 
-  Text, View, 
+  Text, 
+  View, 
   ImageBackground, 
   TouchableOpacity, 
   TouchableHighlight,
   Modal,
   TextInput,
-  ScrollView
+  ScrollView,
+  Button,
 } from 'react-native';
 import Constants from 'expo-constants'
 import { AntDesign } from '@expo/vector-icons';
@@ -52,7 +56,7 @@ export default function App() {
   }
 
   function deletTask(id) {
-    alert('Tarefa com id ' + id + ' foi deletada com sucesso!');
+    
     let newTask = tasks.filter(function(val){
       return val.id != id;
     });
@@ -125,7 +129,17 @@ export default function App() {
             <View style = {styles.tarefaSingle}>
                 <View style = {{flex: 1, width: '100%', padding: 10}}>
                   <Text>
-                    {val.task}
+                
+                    <BouncyCheckbox
+                      size={25}
+                      fillColor="red"
+                      unfillColor="#FFFFFF"
+                      text={val.task}
+                      iconStyle={{ borderColor: "red" }}
+                      innerIconStyle={{ borderWidth: 2 }}
+                      textStyle={{ fontFamily: "Lato_400Regular" }}
+                      onPress={(isChecked: boolean) => {}}
+                    />
                   </Text>
                 </View>
 
@@ -182,6 +196,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Lato_900Black'
     
+  },
+
+  checkbox: {
+    margin: 8,
+  },
+
+  section: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   coverView: {
