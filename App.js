@@ -31,6 +31,7 @@ export default function App() {
 
   const [modal, setModal] = useState(false);
   const [currentTask, setCurrentTask] = useState('');
+  const [checkboxState, setCheckboxState] = useState(false);
 
   let [fontsLoaded, fontError] = useFonts({
     Lato_400Regular,
@@ -138,7 +139,7 @@ export default function App() {
                       iconStyle={{ borderColor: "red" }}
                       innerIconStyle={{ borderWidth: 2 }}
                       textStyle={{ fontFamily: "Lato_400Regular" }}
-                      onPress={(isChecked: boolean) => {}}
+                      onPress={() => setCheckboxState(!checkboxState)}
                     />
                   </Text>
                 </View>
